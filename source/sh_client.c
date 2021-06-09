@@ -8,10 +8,10 @@ sem_t sem;
 struct timespec start, stop;
 double accum;
 
-//¼­¹ö·Î µ¥ÀÌÅÍ Àü¼Û
+//ì„œë²„ë¡œ ë°ì´í„° ì „ì†¡
 void data_send() {
-	sem_wait(&sem);	//sendÇÒ ¶§´Â recv¸¦ ¸øÇÔ
-	if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {//½Ã°£ÃøÁ¤½ÃÀÛ
+	sem_wait(&sem);	//sendí•  ë•ŒëŠ” recvë¥¼ ëª»í•¨
+	if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {//ì‹œê°„ì¸¡ì •ì‹œì‘
 		perror("clock gettime");
 		return EXIT_FAILURE;
 	}
@@ -19,17 +19,17 @@ void data_send() {
 	sem_post(&sem);
 }
 
-//¼­¹ö·ÎºÎÅÍ µ¥ÀÌÅÍ¸¦ ÀĞ¾î¿È
+//ì„œë²„ë¡œë¶€í„° ë°ì´í„°ë¥¼ ì½ì–´ì˜´
 void data_read() {
-	sem_wait(&sem);	//recvÇÒ ¶§´Â send¸¦ ¸øÇÔ
+	sem_wait(&sem);	//recví•  ë•ŒëŠ” sendë¥¼ ëª»í•¨
 	for (int i = 0; i < LISTSIZ; i++) {
 		printf("server: %d\n", shmaddr[i]);
 	}
-	if (clock_gettime(CLOCK_MONOTONIC, &stop) == -1) {//½Ã°£ÃøÁ¤Á¾·á
+	if (clock_gettime(CLOCK_MONOTONIC, &stop) == -1) {//ì‹œê°„ì¸¡ì •ì¢…ë£Œ
 		perror("clock gettime");
 		return EXIT_FAILURE;
 	}
-	//°É¸°½Ã°£ Ãâ·Â
+	//ê±¸ë¦°ì‹œê°„ ì¶œë ¥
 	accum = (stop.tv_sec - start.tv_sec) + (double)(stop.tv_nsec - start.tv_nsec) / (double)BILLION;
 	printf("%.9f\n", accum);
 
@@ -37,26 +37,26 @@ void data_read() {
 }
 
 void thread_start() {
-	pthread_create(&p_thread[1], NULL, data_send, NULL);	//µ¥ÀÌÅÍ º¸³»±â
-	pthread_create(&p_thread[2], NULL, data_read, NULL);		//µ¥ÀÌÅÍ ¹Ş±â
+	pthread_create(&p_thread[1], NULL, data_send, NULL);	//ë°ì´í„° ë³´ë‚´ê¸°
+	pthread_create(&p_thread[2], NULL, data_read, NULL);		//ë°ì´í„° ë°›ê¸°
 	pthread_join(p_thread[1], (void**)&status);
 	pthread_join(p_thread[2], (void**)&status);
 }
 
 void main(void) {
 	int com = 0;
-	//°øÀ¯ ¸Ş¸ğ¸® »ı¼º (Å°´Â 60128)
+	//ê³µìœ  ë©”ëª¨ë¦¬ ìƒì„± (í‚¤ëŠ” 60128)
 	if ((shm1 = shmget(SHMKEY, sizeof(int) * LISTSIZ, IPC_CREAT | 0666)) == -1) {
 		perror("shm1 failed");
 		exit(1);
 	}
-	//°øÀ¯¸Ş¸ğ¸® ºÙÀÌ±â
+	//ê³µìœ ë©”ëª¨ë¦¬ ë¶™ì´ê¸°
 	if ((shmaddr = shmat(shm1, 0, 0)) == (void*)-1) {
 		perror("shmat failed");
 		exit(1);
 	}
 
-	sem_init(&sem, 0, 1);	//¼¼¸¶Æ÷¾î ÃÊ±âÈ­
+	sem_init(&sem, 0, 1);	//ì„¸ë§ˆí¬ì–´ ì´ˆê¸°í™”
 	while (1) {
 		scanf("%d", &com);
 		if (com == 1) {
@@ -69,5 +69,5 @@ void main(void) {
 		}
 		else if (com == 0)  break;
 	}
-	sem_destroy(&sem);	//¼¼¸¶Æ÷¾î »èÁ¦
+	sem_destroy(&sem);	//ì„¸ë§ˆí¬ì–´ ì‚­ì œ
 }
