@@ -5,15 +5,15 @@ int* shmaddr;
 int status;
 pthread_t p_thread[3];
 
-//Å¬¶óÀÌ¾ğÆ®¿¡°Ô µ¥ÀÌÅÍ Àü¼Û
+//í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ë°ì´í„° ì „ì†¡
 void data_send() {
 	for (int i = 0; i < LISTSIZ; i++) {
 		shmaddr[i] = i;
 	}
-	printf("Àü¼Û ¿Ï·á\n");
+	printf("ì „ì†¡ ì™„ë£Œ\n");
 }
 
-//µ¥ÀÌÅÍ¸¦ º¸³»±â À§ÇÑ ½º·¹µå
+//ë°ì´í„°ë¥¼ ë³´ë‚´ê¸° ìœ„í•œ ìŠ¤ë ˆë“œ
 void data_read() {
 	pthread_create(&p_thread[2], NULL, data_send, NULL);
 	pthread_join(p_thread[2], (void**)&status);
@@ -21,21 +21,21 @@ void data_read() {
 }
 
 void th_start() {
-	if (shmaddr[0] == 1) {	//Å¬¶óÀÌ¾ğÆ®°¡ ÀÔ·ÂÇÑ °ªÀÌ 1ÀÏ ¶§
+	if (shmaddr[0] == 1) {	//í´ë¼ì´ì–¸íŠ¸ê°€ ì…ë ¥í•œ ê°’ì´ 1ì¼ ë•Œ
 		pthread_create(&p_thread[1], NULL, data_read, NULL);
 		pthread_join(p_thread[1], (void**)&status);
 	}
 }
 
 void main() {
-	getsem();//¼­¹ö°¡ ¼¼¸¶Æ÷¾î »ı¼º
+	getsem();//ì„œë²„ê°€ ì„¸ë§ˆí¬ì–´ ìƒì„±
 
-			 //°øÀ¯ ¸Ş¸ğ¸® »ı¼º (Å°´Â 60128)
+			 //ê³µìœ  ë©”ëª¨ë¦¬ ìƒì„± (í‚¤ëŠ” 60128)
 	if ((shm1 = shmget(SHMKEY, sizeof(int) * LISTSIZ, IPC_CREAT | 0666)) == -1) {
 		perror("shm1 failed");
 		exit(1);
 	}
-	//°øÀ¯¸Ş¸ğ¸® ºÙÀÌ±â
+	//ê³µìœ ë©”ëª¨ë¦¬ ë¶™ì´ê¸°
 	if ((shmaddr = (int*)shmat(shm1, NULL, 0)) == (void*)-1) { 
 		perror("shmat failed");
 		exit(1);
