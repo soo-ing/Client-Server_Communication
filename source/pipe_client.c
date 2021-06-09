@@ -16,7 +16,7 @@ pthread_t p_thread[3];
 
 int semid;
 
-/* ¼¼¸¶Æ÷¾î ¼³Á¤*/
+/* ì„¸ë§ˆí¬ì–´ ì„¤ì •*/
 void getsem(void) {
 	if ((semid = semget(SEMKEY, 1, IPC_CREAT | 0666)) == -1) {
 		perror("semget failed");
@@ -29,14 +29,14 @@ void getsem(void) {
 	}
 }
 
-int pipefunc() {   //pipe ÀĞ¾î¿À´Â ÇÔ¼ö
-				   /*fd0Àº ¼­¹ö°¡ ÀĞ°í Å¬¶ó°¡ ¾²´Â¿ë*/
+int pipefunc() {   //pipe ì½ì–´ì˜¤ëŠ” í•¨ìˆ˜
+				   /*fd0ì€ ì„œë²„ê°€ ì½ê³  í´ë¼ê°€ ì“°ëŠ”ìš©*/
 	if ((fd0 = open(PIPENAME0, O_WRONLY)) < 0) {
 		printf("fail to open named pipe0\n");
 		return 0;
 	}
-	/* pipe ¿­±â, Read Write°¡´É ÇØ¾ß ÇÑ´Ù */
-	/*fd1Àº ¼­¹ö°¡ ¾²°í Å¬¶ó°¡ ÀĞ´Â¿ë*/
+	/* pipe ì—´ê¸°, Read Writeê°€ëŠ¥ í•´ì•¼ í•œë‹¤ */
+	/*fd1ì€ ì„œë²„ê°€ ì“°ê³  í´ë¼ê°€ ì½ëŠ”ìš©*/
 	if ((fd1 = open(PIPENAME1, O_RDONLY)) < 0) {
 		printf("fail to open named pipe1\n");
 		return 0;
@@ -45,7 +45,7 @@ int pipefunc() {   //pipe ÀĞ¾î¿À´Â ÇÔ¼ö
 
 
 
-void *writefunc(void *flag) {   //pipe¿¡ writeÇÏ´Â ÇÔ¼ö
+void *writefunc(void *flag) {   //pipeì— writeí•˜ëŠ” í•¨ìˆ˜
 	sem_wait(&sem);
 	snprintf(snd, sizeof(snd), "%d", 1);
 	if ((nread = write(fd0, snd, sizeof(snd))) < 0) {
@@ -55,20 +55,20 @@ void *writefunc(void *flag) {   //pipe¿¡ writeÇÏ´Â ÇÔ¼ö
 	sem_post(&sem);
 }
 
-void *data_read(void *arg) {   //µ¥ÀÌÅÍ ÀĞ¾î¿À±â						
+void *data_read(void *arg) {   //ë°ì´í„° ì½ì–´ì˜¤ê¸°						
 	sem_wait(&sem);
 
 	for (i = 0; i < LISTSIZ; i++) {
 		if ((nread = read(fd1, msg, sizeof(msg))) < 0) {
 			printf("read failed\n");
 		}
-		printf("server: %s\n", msg);   //¼­¹ö¿¡¼­ º¸³½ µ¥ÀÌÅÍ Ãâ·Â
+		printf("server: %s\n", msg);   //ì„œë²„ì—ì„œ ë³´ë‚¸ ë°ì´í„° ì¶œë ¥
 	}
 	sem_post(&sem);
 }
 
 void main(void) {
-	pipefunc();   //ÆÄÀÌÇÁ ¿¬°á
+	pipefunc();   //íŒŒì´í”„ ì—°ê²°
 	int status;
 	int num= 0;
 	sem_init(&sem, 0, 1);
@@ -78,39 +78,39 @@ void main(void) {
 
 	while (1) {
 		scanf("%d", &num);
-		if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {   //½Ã°£ÃøÁ¤½ÃÀÛ
+		if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {   //ì‹œê°„ì¸¡ì •ì‹œì‘
 			perror("clock gettime");
 			return EXIT_FAILURE;
 		}
-		/* 1¹øÀ» ´©¸£¸é */
+		/* 1ë²ˆì„ ëˆ„ë¥´ë©´ */
 		if (num == 1) {
-			a = pthread_create(&p_thread[0], NULL, writefunc, NULL);  //¾²·¹µå »ı¼º
+			a = pthread_create(&p_thread[0], NULL, writefunc, NULL);  //ì“°ë ˆë“œ ìƒì„±
 			if (a < 0) {
 				perror("thread0 create error : ");
 				exit(0);
 			}
 
-			b = pthread_create(&p_thread[1], NULL, data_read, NULL); //¾²·¹µå »ı¼º
+			b = pthread_create(&p_thread[1], NULL, data_read, NULL); //ì“°ë ˆë“œ ìƒì„±
 			if (b < 0) {
 				perror("thread1 create error : ");
 				exit(0);
 			}
-			/* ½º·¹µå¸¦ »ı¼ºÇÏ°í °¢ ½º·¹µå¸¶´Ù joinÀ» ÇØÁØ´Ù */
+			/* ìŠ¤ë ˆë“œë¥¼ ìƒì„±í•˜ê³  ê° ìŠ¤ë ˆë“œë§ˆë‹¤ joinì„ í•´ì¤€ë‹¤ */
 			pthread_join(p_thread[0], (void**)&status);
 			pthread_join(p_thread[1], (void**)&status);
 		}
-		else if (num == 0) {//Á¾·á
+		else if (num == 0) {//ì¢…ë£Œ
 			break;
 		}
-		//°É¸°½Ã°£ Ãâ·Â
-		if (clock_gettime(CLOCK_MONOTONIC, &stop) == -1) {//½Ã°£ÃøÁ¤Á¾·á
+		//ê±¸ë¦°ì‹œê°„ ì¶œë ¥
+		if (clock_gettime(CLOCK_MONOTONIC, &stop) == -1) {//ì‹œê°„ì¸¡ì •ì¢…ë£Œ
 			perror("clock gettime");
 			return EXIT_FAILURE;
 		}
 
 		accum = (stop.tv_sec - start.tv_sec) + (double)(stop.tv_nsec - start.tv_nsec) / (double)BILLION;
 		printf("---------------------------------------------\n");
-		printf("½Ã°£ ÃøÁ¤: %.9f\n", accum);
+		printf("ì‹œê°„ ì¸¡ì •: %.9f\n", accum);
 	}
 	sem_destroy(&sem);
 }
