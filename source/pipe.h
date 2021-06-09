@@ -17,9 +17,9 @@
 #define LISTSIZ 50 
 #define MSG_SIZE 80
 #define BILLION 100000000L;
-#define SEMKEY (key_t) 60126 //¼¼¸¶Æ÷¾î Å°
-#define PIPENAME0 "./named_pipe_file0"  //¼­¹ö read¿ë
-#define PIPENAME1 "./named_pipe_file1"  //¼­¹ö write¿ë
+#define SEMKEY (key_t) 60126 //æŠ€ä»˜å™¨ç»¢ è™
+#define PIPENAME0 "./named_pipe_file0"  //è¾‘æ»š readä¾©
+#define PIPENAME1 "./named_pipe_file1"  //è¾‘æ»š writeä¾©
 
 union semun {
 	int val;
