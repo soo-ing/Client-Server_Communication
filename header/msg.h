@@ -25,20 +25,20 @@ struct message {
 };
 struct sendbuf
 {
-	long msgtype; //Å¬¶óÀÌ¾ğÆ® pid °ªÀ¸·Î º¸³¿
+	long msgtype; //í´ë¼ì´ì–¸íŠ¸ pid ê°’ìœ¼ë¡œ ë³´ëƒ„
 	int arr[LISTSIZ];
 };
 struct recvbuf
 {
-	long msgtype; // ¼­¹ö pid °ªÀ¸·Î ¹ŞÀ½
+	long msgtype; // ì„œë²„ pid ê°’ìœ¼ë¡œ ë°›ìŒ
 	int data;
 	int sss;
-	int clnt_pid; // Å¬¶óÀÌ¾ğÆ® pid
+	int clnt_pid; // í´ë¼ì´ì–¸íŠ¸ pid
 };
 struct resultbuf
 {
-	long msgtype; // Å¬¶óÀÌ¾ğÆ® pid °ªÀ¸·Î º¸³¿
-	int result; // ¼­¹ö¿¡¼­ Å¬¶óÀÌ¾ğÆ®·Î º¸³»´Â ¿äÃ» °á°ú °ª
+	long msgtype; // í´ë¼ì´ì–¸íŠ¸ pid ê°’ìœ¼ë¡œ ë³´ëƒ„
+	int result; // ì„œë²„ì—ì„œ í´ë¼ì´ì–¸íŠ¸ë¡œ ë³´ë‚´ëŠ” ìš”ì²­ ê²°ê³¼ ê°’
 };
 typedef struct Node
 {
